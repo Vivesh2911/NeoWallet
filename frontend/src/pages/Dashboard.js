@@ -10,7 +10,7 @@ export default function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-
+// eslint-disable-next-line
   useEffect(() => {
     const fetchData = async () => {
       try {
