@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import API from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const quickAmounts = [500, 1000, 2000, 5000, 10000];
 
 export default function Deposit() {
+  const navigate = useNavigate();
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -19,11 +22,18 @@ export default function Deposit() {
     setSuccess('');
     try {
       const res = await API.post('/wallet/deposit', { amount: parseFloat(amount) });
-      setSuccess(res.data.message);
+      navigate('/receipt', {
+  state: {
+    type: 'deposit',
+    amount: amount,
+    balance: res.data.new_balance,
+    timestamp: new Date(),
+  }
+});
       updateBalance(res.data.new_balance);
       setAmount('');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Deposit failed');
+      toast.error(err.response?.data?.detail || 'Deposit failed');
     }
     setLoading(false);
   };

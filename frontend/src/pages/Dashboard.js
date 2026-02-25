@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar';
 import API from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+//import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function Dashboard() {
   const { user, updateBalance } = useAuth();
@@ -29,10 +30,18 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  const chartData = transactions.slice().reverse().map((t, i) => ({
-    name: `#${i + 1}`,
+  const chartData = transactions.slice().reverse().reduce((acc, t) => {
+  const prev = acc.length > 0 ? acc[acc.length - 1].balance : 0;
+  const balance = t.transaction_type === 'transfer'
+    ? prev - t.amount
+    : prev + t.amount;
+  acc.push({
+    name: new Date(t.timestamp).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }),
+    balance: parseFloat(balance.toFixed(2)),
     amount: t.amount,
-  }));
+  });
+  return acc;
+}, []);
 
   return (
     <div style={styles.layout}>
@@ -74,18 +83,28 @@ export default function Dashboard() {
 
         {/* Chart */}
         {chartData.length > 0 && (
-          <div style={styles.chartCard}>
-            <h3 style={styles.sectionTitle}>Recent Activity</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={chartData}>
-                <XAxis dataKey="name" stroke="#555" />
-                <YAxis stroke="#555" />
-                <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid #333', borderRadius: '8px', color: '#fff' }} />
-                <Line type="monotone" dataKey="amount" stroke="#8b5cf6" strokeWidth={2} dot={{ fill: '#8b5cf6' }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
+  <div style={styles.chartCard}>
+    <h3 style={styles.sectionTitle}>📈 Balance History</h3>
+    <ResponsiveContainer width="100%" height={220}>
+      <LineChart data={chartData}>
+        <XAxis dataKey="name" stroke="#555" fontSize={12} />
+        <YAxis stroke="#555" fontSize={12} tickFormatter={(v) => `₹${v}`} />
+        <Tooltip
+          contentStyle={{ background: '#1a1a2e', border: '1px solid #333', borderRadius: '8px', color: '#fff' }}
+          formatter={(value) => [`₹${value.toLocaleString('en-IN')}`, 'Balance']}
+        />
+        <Line
+          type="monotone"
+          dataKey="balance"
+          stroke="#8b5cf6"
+          strokeWidth={2.5}
+          dot={{ fill: '#8b5cf6', r: 4 }}
+          activeDot={{ r: 6, fill: '#a855f7' }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+)}
 
         {/* Recent Transactions */}
         <div style={styles.txnCard}>

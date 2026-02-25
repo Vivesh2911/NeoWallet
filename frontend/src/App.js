@@ -7,6 +7,9 @@ import Dashboard from './pages/Dashboard';
 import Deposit from './pages/Deposit';
 import Transfer from './pages/Transfer';
 import Transactions from './pages/Transactions';
+import Profile from './pages/Profile';
+import Receipt from './pages/Receipt';
+import Analytics from './pages/Analytics';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -30,6 +33,9 @@ function AppRoutes() {
       <Route path="/deposit" element={<PrivateRoute><Deposit /></PrivateRoute>} />
       <Route path="/transfer" element={<PrivateRoute><Transfer /></PrivateRoute>} />
       <Route path="/transactions" element={<PrivateRoute><Transactions /></PrivateRoute>} />
+      <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+      <Route path="/receipt" element={<PrivateRoute><Receipt /></PrivateRoute>} />
+      <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
     </Routes>
   );
 }

@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import API from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function Transfer() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ receiver_email: '', amount: '', description: '' });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -21,11 +24,20 @@ export default function Transfer() {
         amount: parseFloat(form.amount),
         description: form.description,
       });
-      setSuccess(res.data.message);
+      navigate('/receipt', {
+  state: {
+    type: 'transfer',
+    amount: form.amount,
+    recipient: form.receiver_email,
+    description: form.description,
+    balance: res.data.new_balance,
+    timestamp: new Date(),
+  }
+});
       updateBalance(res.data.new_balance);
       setForm({ receiver_email: '', amount: '', description: '' });
     } catch (err) {
-      setError(err.response?.data?.detail || 'Transfer failed');
+      toast.error(err.response?.data?.detail || 'Transfer failed');
     }
     setLoading(false);
   };

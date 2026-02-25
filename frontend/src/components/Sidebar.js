@@ -7,6 +7,8 @@ const navItems = [
   { icon: '💰', label: 'Deposit', path: '/deposit' },
   { icon: '📤', label: 'Transfer', path: '/transfer' },
   { icon: '📜', label: 'Transactions', path: '/transactions' },
+  { icon: '👤', label: 'Profile', path: '/profile' },
+  { icon: '📊', label: 'Analytics', path: '/analytics' },
 ];
 
 export default function Sidebar() {
